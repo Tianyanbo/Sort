@@ -1,0 +1,302 @@
+package interviewed.tree.binaryTree;
+
+import java.util.Stack;
+
+public class BinaryTree {
+	private TreeNode root;
+
+	public BinaryTree(TreeNode root) {
+		super();
+		this.root = root;
+	}
+
+	public boolean isEmpty() {
+		return root == null;
+	}
+
+	public void clear() {
+		root = null;
+	}
+
+	public TreeNode getRoot() {
+		return root;
+	}
+
+	public int size() {
+		return size(root);
+	}
+
+	public int height() {
+		return height(root);
+	}
+
+	public int size(TreeNode rootNode) {
+		if (rootNode == null) {
+			return 0;
+		}
+		return 1 + size(rootNode.getLeftChild()) + size(rootNode.getRightChild());
+	}
+
+	public int height(TreeNode rootNode) {
+		if (rootNode == null) {
+			return 0;
+		}
+		int leftheight = height(rootNode.getLeftChild());
+		int rightheight = height(rootNode.getRightChild());
+		return (leftheight > rightheight) ? leftheight + 1 : rightheight + 1;
+	}
+
+	public boolean contains(TreeNode inNode) {
+		return contains(inNode, root);
+	}
+
+	public boolean contains(TreeNode inNode, TreeNode rootNode) {
+		if (rootNode == null) {
+			return false;
+		}
+		int result = rootNode.getValue().compareTo(inNode.getValue());
+		if (result > 0) {
+			return contains(inNode, rootNode.getLeftChild());
+		}
+		if (result < 0) {
+			return contains(inNode, rootNode.getRightChild());
+		}
+		return true;
+	}
+
+	public TreeNode findMax(TreeNode rootNode) {
+		if (rootNode != null) {
+			while (rootNode.getRightChild() != null) {
+				rootNode = rootNode.getRightChild();
+			}
+		}
+		return rootNode;
+	}
+
+	public TreeNode findMin(TreeNode rootNode) {
+		if (rootNode == null) {
+			return null;
+		}
+		if (rootNode.getLeftChild() == null) {
+			return rootNode;
+		}
+		return findMin(rootNode.getLeftChild());
+	}
+
+	public Integer findMin() {
+		if (isEmpty()) {
+			System.out.println("二叉树为空");
+			return null;
+		} else
+			return findMin(root).getValue();
+
+	}
+
+	public Integer findMax() {
+		if (isEmpty()) {
+			System.out.println("二叉树为空");
+			return null;
+		} else
+			return findMax(root).getValue();
+	}
+
+	public TreeNode getParent(TreeNode node) {
+		return getParent(node, root);
+	}
+
+	public TreeNode getParent(TreeNode inNode, TreeNode rootNode) {
+		if (inNode == null || rootNode == null) {
+			return null;
+		}
+		int result = inNode.getValue().compareTo(rootNode.getValue());
+		if (result == 0) {
+			return null;
+		} else if (result > 0) {
+			return getParent(inNode, rootNode.getLeftChild());
+		} else {
+			return getParent(inNode, rootNode.getRightChild());
+		}
+	}
+
+	public TreeNode insert(TreeNode node) {
+		if (root == null) {
+			root = node;
+			return node;
+		} else {
+			return insert(node, root);
+		}
+	}
+
+	public TreeNode insert(TreeNode inNode, TreeNode rootNode) {
+		if (rootNode == null) {
+			root = rootNode;
+			return root;
+		} else {
+			int result = rootNode.getValue().compareTo(inNode.getValue());
+
+			if (result > 0) {
+				rootNode.setLeftChild(insert(inNode, rootNode.getLeftChild()));
+			}
+			if (result < 0) {
+				rootNode.setRightChild(insert(inNode, rootNode.getRightChild()));
+			}
+			return rootNode;
+		}
+	}
+
+	public void remove(TreeNode inNode) {
+		root = remove(inNode, root);
+	}
+
+	public TreeNode remove(TreeNode inNode, TreeNode rootNode) {
+		TreeNode outNode;
+		if (rootNode == null) {
+			outNode = null;
+		}
+
+		if (inNode.getLeftChild() == null && inNode.getRightChild() == null) {
+			outNode = getParent(inNode);
+			if (outNode == null) {
+				root = null;
+			}
+			if (outNode.getLeftChild().getValue().compareTo(inNode.getValue()) == 0) {
+				outNode.setLeftChild(null);
+			} else {
+				outNode.setRightChild(null);
+			}
+		} else if (inNode.getLeftChild() == null) {
+			outNode = getParent(inNode);
+			if (outNode == null) {
+				root = inNode.getRightChild();
+				outNode = root;
+			}
+			if (outNode.getLeftChild().getValue().compareTo(inNode.getValue()) == 0) {
+				outNode.setLeftChild(inNode.getRightChild());
+			} else {
+				outNode.setRightChild(inNode.getRightChild());
+			}
+		} else if (inNode.getRightChild() == null) {
+			outNode = getParent(inNode);
+			if (outNode == null) {
+				root = inNode.getLeftChild();
+				outNode = root;
+			}
+			if (outNode.getLeftChild().getValue().compareTo(inNode.getValue()) == 0) {
+				outNode.setLeftChild(inNode.getLeftChild());
+			} else {
+				outNode.setRightChild(inNode.getLeftChild());
+			}
+		} else {
+			outNode = findMin(inNode.getRightChild());
+			outNode.setLeftChild(inNode.getLeftChild());
+			outNode.setRightChild(inNode.getRightChild());
+			remove(inNode, outNode);
+
+		}
+		return outNode;
+	}
+
+	public void print(TreeNode node) {
+		System.out.println(node.getName() + ":" + node.getValue().intValue());
+	}
+
+	// 前序遍历
+	public void preorder(TreeNode node) {
+		if (node == null) {
+			System.out.println("遍历失败：二叉树为空！");
+		}
+		print(node);
+		preorder(node.getLeftChild());
+		preorder(node.getRightChild());
+	}
+
+	// 前序遍历
+	public void inorder(TreeNode node) {
+		if (node == null) {
+			System.out.println("遍历失败：二叉树为空！");
+		}
+
+		preorder(node.getLeftChild());
+		print(node);
+		preorder(node.getRightChild());
+	}
+
+	// 前序遍历
+	public void postorder(TreeNode node) {
+		if (node == null) {
+			System.out.println("遍历失败：二叉树为空！");
+		}
+		preorder(node.getLeftChild());
+		preorder(node.getRightChild());
+		print(node);
+	}
+
+	public void iteratorPerorder(TreeNode node) {
+		Stack<TreeNode> stack = new Stack<TreeNode>();
+		if (node == null) {
+			System.out.println("遍历失败：二叉树为空！");
+		}
+		TreeNode tNode = node;
+		while (tNode != null || !stack.isEmpty()) {
+			while (tNode != null) {
+				print(tNode);
+				stack.push(tNode);
+				tNode = tNode.getLeftChild();
+			}
+			if (!stack.isEmpty()) {
+				tNode = stack.pop();
+				tNode = tNode.getRightChild();
+			}
+		}
+
+	}
+
+	public void iteratorInrorder(TreeNode node) {
+		Stack<TreeNode> stack = new Stack<TreeNode>();
+		if (node == null) {
+			System.out.println("遍历失败：二叉树为空！");
+		}
+		TreeNode tNode = node;
+		while (tNode != null || !stack.isEmpty()) {
+			while (tNode != null) {
+
+				stack.push(tNode);
+				tNode = tNode.getLeftChild();
+			}
+			if (!stack.isEmpty()) {
+				tNode = stack.pop();
+				print(tNode);
+				tNode = tNode.getRightChild();
+			}
+		}
+
+	}
+
+	public void iteratorPostrorder(TreeNode node) {
+		Stack<TreeNode> stack = new Stack<TreeNode>();
+		if (node == null) {
+			System.out.println("遍历失败：二叉树为空！");
+		}
+		TreeNode tNode = node;
+		while (tNode != null) {
+			for (; tNode.getLeftChild() != null; tNode = tNode.getLeftChild()) {
+				stack.push(tNode);
+			}
+
+			while (tNode != null && (tNode.getRightChild() == null || tNode.getRightChild() == node)) {
+				print(tNode);
+				// 纪录上一个已输出结点
+				node = tNode;
+				if (stack.empty()) {
+					return;
+				}
+				tNode = stack.pop();
+			}
+			//处理右子树  
+            stack.push(tNode);  
+            tNode=tNode.getRightChild(); 
+		}
+
+	}
+
+}
